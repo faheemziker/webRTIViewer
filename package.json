@@ -1,0 +1,19 @@
+{
+  "name": "webrtiviewer",
+  "version": "1.0.0",
+  "description": "[this repository is a development copy of the code at http://vcg.isti.cnr.it/~palma/webRTIViewer.zip ... any\r changes here are expected to be folded back into the master distribution, see CHANGELOG.md for a summary of\r differences]",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/faheemziker/webRTIViewer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/faheemziker/webRTIViewer/issues"
+  },
+  "homepage": "https://github.com/faheemziker/webRTIViewer"
+}
