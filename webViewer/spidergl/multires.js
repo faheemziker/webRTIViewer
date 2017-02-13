@@ -21,60 +21,77 @@
 /*  but WITHOUT ANY WARRANTY; without even the implied warranty of       */
 /*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        */
 /*  GNU General Public License for more details.                         */
-/*                                                                       */ 
+/*                                                                       */
 /*  You should have received a copy of the GNU General Public License    */
 /*  along with this program.  If not, see <http://www.gnu.org/licenses/> */
 /*************************************************************************/
 
 function createRtiViewer(idDiv, imageUrl, width, height)
 {
-	var canvasHeight = height;
-	var canvasWidth = width;
+	var touchEvent = false;
+	// var canvasHeight = height;
+	// var canvasWidth = width;
+
+    var parentElement = document.getElementById(idDiv);
+    var canvasWidth = parentElement.offsetWidth;
+    var canvasHeight = parentElement.offsetHeight;
+
+
 	var fullscreen = false;
 	var canvasContainer = $($("#"+idDiv)[0]);
+
 	var canvasDiv = document.createElement("div");
 	canvasDiv.id = idDiv + "_div";
-	canvasDiv.style.height = height + "px";
-	canvasDiv.style.width = width + "px";
-	canvasDiv.style.margin = "auto";
+	canvasDiv.style.height = "100%";
+	canvasDiv.style.width = "100%";
+	canvasDiv.style.margin = "2px 4px 3px 4px";
 	canvasDiv.style.position = "relative";
 	canvasContainer.append(canvasDiv);
-
+	
 	var canvasNode = $($("#"+idDiv + "_div")[0]);
 	var canvasName = idDiv + "_webgl";
 	var canvas = document.createElement("canvas");
 	canvas.id = canvasName;
-	canvas.width = width;
-	canvas.height = height;
+	canvas.width = canvasWidth;
+	canvas.height = canvasHeight;
 	canvasNode.append(canvas);
-
+	
 	var aNode = document.createElement("a");
 	aNode.href = "http://vcg.isti.cnr.it/rti/webviewer.php";
 	aNode.target ="_blank";
-
+	
 	var aNodeDiv = document.createElement("div");
 	aNodeDiv.style.width = 80 + "px";
 	aNodeDiv.style.height = 50 + "px";
-
+	
 	aNode.appendChild(aNodeDiv);
 	aNode.style.position = "absolute";
 	aNode.style.bottom = "0px";
 	aNode.style.left = "0px";
 	aNode.style.cssFloat = "left";
 	canvasNode.append(aNode);
-
+	
+	var buttonSize = 60 * canvasHeight / screen.height;
+	var buttonSize2 = (canvasHeight - 120) / 5;
+	if (buttonSize2 < buttonSize)
+		buttonSize = buttonSize2;
 	var toolbar = document.createElement("div");
 	toolbar.setAttribute("class", "toolbar");
 	toolbar.style.position = "absolute";
-	toolbar.style.top = "10px";
-	toolbar.style.left = "10px";
+	toolbar.style.top = "0px";
+	toolbar.style.left = "0px";
+	toolbar.style.margin = "10px 0px 0px 10px";
 	toolbar.style.cssFloat = "left";
-	toolbar.style.width = "40px";
-	toolbar.style.height = "200px";
+	toolbar.style.width = buttonSize + "px";
+	toolbar.style.height = "400px";
+	toolbar.style.width = "50px";
 	toolbar.style.visibility = "hidden";
-	toolbar.innerHTML = '<button class = "toolbarButton" id = "zoomIn"></button><button class = "toolbarButton" id = "zoomOut"></button><button class = "toolbarButton" id = "light"></button><button class = "toolbarButton" id = "fullscreen"></button><button class = "toolbarButton" id = "help"></button>'
+	toolbar.innerHTML = '<button class = "toolbarButton" id = "zoomIn" touch-action="none"></button><button class = "toolbarButton" id = "zoomOut" touch-action="none"></button><button class = "toolbarButton" id = "light" touch-action="none"></button><button class = "toolbarButton" id = "fullscreen" touch-action="none"></button><button class = "toolbarButton" id = "help" touch-action="none"></button>'
 	canvasNode.append(toolbar);
-
+	
+	$( "#"+idDiv + "_div button" ).css("height", buttonSize);
+	$( "#"+idDiv + "_div button" ).css("width", buttonSize);
+	
 	var divHelp = document.createElement("div");
 	divHelp.id = idDiv + "_guide";
 	divHelp.style.width = "100%";
@@ -84,11 +101,36 @@ function createRtiViewer(idDiv, imageUrl, width, height)
 	divHelp.style.top = "0px";
 	divHelp.style.color = "#FFFFFF";
 	divHelp.style.backgroundColor="rgba(0, 0, 0, 0.9)";
-
-	divHelp.innerHTML = '<div id = "guideTable"><div id = "guideCell"> <div id = "guideList"><h3>WebRTIViewer<br/></h3><ul><li>Pan: LeftMouseButton + MouseMove.</li><li>Zoom in: MouseWhell or press the button <span><img src = "css/icons/zoomin.png" alt=""/></span></li><li>Zoom out: MouseWheel or press the button <span><img src = "css/icons/zoomout.png" alt=""/></span></li><li>To change the light direction: activate the light with the button <span><img src = "css/icons/light.png" alt=""/></span> and press LeftMouseButton + MouseMove or Ctrl + LeftMouseButton + MouseMove.</li><li>Fullscreen: press the button <span><img src = "css/icons/full.png" alt=""/></span> to active the fullscreen mode and the button <span><img src = "css/icons/full_on.png" alt=""/></span> to exit</li><li>To reset the viewpoint: press R.</li></ul><a href="http://vcg.isti.cnr.it/rti/webviewer.php" target = "_black">Visual Computing Lab ISTI CNR Pisa</a></div></div></div>'
+	
+	// divHelp.innerHTML = '<div id = "guideTable"><div id = "guideCell"> <div id = "guideList"><h3>WebRTIViewer<br/></h3><ul><li>Pan: LeftMouseButton + MouseMove.</li><li>Zoom in: MouseWhell or press the button <span><img src = "/assets/webViewer/css/icons/zoomin.png" alt=""/></span></li><li>Zoom out: MouseWheel or press the button <span><img src = "webViewer/css/icons/zoomout.png" alt=""/></span></li><li>To change the light direction: activate the light with the button <span><img src = "/assets/webViewer/css/icons/light.png" alt=""/></span> and press LeftMouseButton + MouseMove or Ctrl + LeftMouseButton + MouseMove.</li><li>Fullscreen: press the button <span><img src = "/assets/webViewer/css/icons/full.png" alt=""/></span> to active the fullscreen mode and the button <span><img src = "/assets/webViewer/css/icons/full_on.png" alt=""/></span> to exit</li><li>To reset the viewpoint: press R.</li></ul><a href="http://vcg.isti.cnr.it/rti/webviewer.php" target = "_black">Visual Computing Lab ISTI CNR Pisa</a></div></div></div>'
+	
 	divHelp.style.display = "none";
 	canvasNode.append(divHelp);
 
+
+	window.addEventListener('resize', resizeCanvas, false);
+
+    function resizeCanvas() {
+		// console.log("resizeCanvas");
+    	var parentElement = document.getElementById("viewerCont_webgl").parentElement;
+    	// console.log(parentElement);
+
+        var width = parentElement.offsetWidth;
+        var height = parentElement.offsetHeight;
+
+        canvas.width=width;
+        canvas.height=height;
+        
+        var canvasDiv = document.getElementById("viewerCont_webgl");
+        canvasDiv.style.height = (height-10) + "px";	
+		canvasDiv.style.width = (width-15) + "px";
+		canvasDiv.style.left = 0 + "px";
+		canvasDiv.style.right = 0 + "px";
+		
+		// console.log(canvasDiv);
+		multiResRTI.resize();
+    }
+    
 	$( "#"+idDiv + "_div #zoomIn" ).button({
       icons: {
         primary: "zoomInIcon toolbarIcon"
@@ -113,7 +155,7 @@ function createRtiViewer(idDiv, imageUrl, width, height)
 	  label: "Light Off"
     }).click(function(){
 		var options;
-		if ( $( this ).text() == "Light Off" ) 
+		if ( $( this ).text() == "Light Off" )
 		{
 			options = {
 				label: "Light On",
@@ -269,7 +311,7 @@ function createRtiViewer(idDiv, imageUrl, width, height)
 
 
 
-function log(msg) 
+function log(msg)
 {
 	//console.log(msg);
 }
@@ -302,10 +344,10 @@ MultiRes.prototype = {
 	setMode: function(x)
 	{
 		this.mode = x;
-	},			
+	},
 
 
-	_setLightDir : function(x, y) 
+	_setLightDir : function(x, y)
 	{
 		var lx = ((x / this.ui.width) * 2.2 - 1.1);
 		var ly = ((y / this.ui.height) * 2.2 - 1.1);
@@ -368,6 +410,7 @@ MultiRes.prototype = {
 
 	loadImage : function(url)
 	{
+		
 		this.renderer.loadImage(url);
 		this.OnLoadImageCallback(this.renderer.type);
 		this.xform  = new SglTransformStack();
@@ -387,7 +430,7 @@ MultiRes.prototype = {
 		this.maxScale = Math.max(this.renderer.imgWidth / w, this.renderer.imgHeight / h) * 2.5;
 		this.viewerdx = 100;
 		this.viewerdy = 100;
-	},			
+	},
 
 
 	stopRendering: function()
@@ -454,7 +497,7 @@ MultiRes.prototype = {
 		if (deltaPos > 0.0001 || deltaPos < -0.0001)
 		{
 			this.animationStack = [];
-			var t = this.maxStep * 2; 
+			var t = this.maxStep * 2;
 			var d = 3 * deltaPos /(t * t * t);
 			var b = -2 * t * d;
 			var speed = d * t * t;
@@ -502,7 +545,7 @@ MultiRes.prototype = {
 				this.renderer.updateData = false;
 				this.isMoving = true;
 
-				this.computeModelMatrix();				
+				this.computeModelMatrix();
 				var matrix = this.xform.model.top;
 				var tempPos = [this.renderer._tree.scale[0] / 2.0, this.renderer._tree.scale[1] / 2.0 ];
 				var endPoint = [this.ui.width/2.0, this.ui.height/2.0];
@@ -510,7 +553,7 @@ MultiRes.prototype = {
 				var deltaX = endPoint[0] - pos[0];
 				var deltaY = endPoint[1] - pos[1];
 				this.currentSpeed = 0;
-				this.currentPoint = pos;				
+				this.currentPoint = pos;
 				this._updateMoveStack(pos, endPoint, sglV2C(deltaX, deltaY));
 			}
 			else
@@ -582,7 +625,7 @@ MultiRes.prototype = {
 		this.translation[1] += deltaY;
 
 		_SGL_RegisteredCanvas[this.canvas].requestDraw();
-		return;	
+		return;
 	},
 
 	sendMouseDown : function(e)
@@ -605,7 +648,7 @@ MultiRes.prototype = {
 			{
 				this.endAnimation = false;
 				this.currentPoint = [x, y];
-										
+
 				this.animationStack = [];
 
 				var that = this;
@@ -616,7 +659,7 @@ MultiRes.prototype = {
 				this.isMoving = true;
 				return false;
 			}
-			else if (this.mode == 1) 
+			else if (this.mode == 1)
 				this._setLightDir(x, y);
 			return true;
 		}
@@ -660,7 +703,7 @@ MultiRes.prototype = {
 	{
 		if (button == 0)
 		{
-			if (this.mode == 0) 
+			if (this.mode == 0)
 			{
 				this.endAnimation = true;
 				this.renderer.updateData = true;
@@ -743,20 +786,20 @@ MultiRes.prototype = {
 				t = 6 * deltaPos / (2 * speed);
 				d = speed * speed * speed / (9 * deltaPos * deltaPos);
 				b = - 2 * speed * speed / (3 * deltaPos);
-			}					
+			}
 
 			for (var i = 0 ; i < t; i++)
 			{
 				var delta = d * i + d / 3.0 + b / 2.0 + speed;
 				speed += d * (2*i + 1) + b;
-				var acc = d * (i + 1) + b; 
+				var acc = d * (i + 1) + b;
 				var x = movementVector[0] * delta;
 				var y = movementVector[1] * delta;
 				tmpPoint[0] += x;
 				tmpPoint[1] += y;
 				this.animationStack.push([tmpPoint[0], tmpPoint[1], speed, d]);
 			}
-			this.animationStack.push([endPoint[0], endPoint[1], 0, 0]);	
+			this.animationStack.push([endPoint[0], endPoint[1], 0, 0]);
 		}
 	},
 
@@ -807,7 +850,7 @@ MultiRes.prototype = {
 			realDeltaX = 0;
 			realDeltaY = 0;
 		}
-		return sglV2C(realDeltaX, realDeltaY);	
+		return sglV2C(realDeltaX, realDeltaY);
 	},
 
 	update : function(gl, dt)
@@ -992,7 +1035,7 @@ MultiResTree.prototype = {
 				node.parentIndex = parseInt(tokens[1]);
 				if ((node.parentIndex < -1) || (node.parentIndex >= nodesCount)) return;
 
-				for (var c=0; c<4; ++c) 
+				for (var c=0; c<4; ++c)
 				{
 					node.childrenIndices[c] = parseInt(tokens[c+2]);
 					if ((node.childrenIndices[c] < -1) || (node.childrenIndices[c] >= nodesCount)) return;
@@ -1010,9 +1053,9 @@ MultiResTree.prototype = {
 				node.box.max[2] = parseFloat(tokens[13]);
 
 				node.isLeaf = true;
-				for (var j=0; j<4; ++j) 
+				for (var j=0; j<4; ++j)
 				{
-					if (node.childrenIndices[j] >= 0) 
+					if (node.childrenIndices[j] >= 0)
 					{
 						node.isLeaf = false;
 						break;
@@ -1050,13 +1093,13 @@ MultiResTree.prototype = {
 						node.parentIndex = -1;
 					if (i < nLevel - 1)
 						node.isLeaf = false;
-					for (var c=0; c<4; ++c) 
+					for (var c=0; c<4; ++c)
 					{
 						if (i == nLevel - 1)
 							node.childrenIndices[c] = -1;
 						else
 							node.childrenIndices[c] = index * 4 + 1 + (c + 2) % 4;
-					}					
+					}
 					node.projectedSize = tileSize;
 
 					if (index > 0)
@@ -1079,14 +1122,14 @@ MultiResTree.prototype = {
 						var diff = sglSubV3(imgCenter, center);
 						if (Math.abs(diff[0]) <= halfSize[0] && Math.abs(diff[1]) <= halfSize[1] && Math.abs(diff[2]) <= halfSize[2])
 							node.zScale = 1;
-						else 
+						else
 							node.zScale = 0;
 					}
 					else
 					{
 						node.box = new SglBox3([0.0, 0.0, 0.0], [1.0, 1.0, 1.0]);
 						node.zScale = 1;
-					}	
+					}
 					nodes[index] = node;
 					index++;
 				}
@@ -1104,15 +1147,15 @@ MultiResTree.prototype = {
 	destroy : function(destroyData)
 	{
 		var n = null;
-		for (var i in this.nodes) 
+		for (var i in this.nodes)
 		{
 			n = this.nodes[i];
-			if (n.req) 
+			if (n.req)
 			{
 				n.req.onLoad = null;
 				n.req = null;
 			}
-			if (n.data) 
+			if (n.data)
 			{
 				destroyData(n.data);
 				n.data = null;
@@ -1134,12 +1177,12 @@ MultiResTree.prototype = {
 		this._load(url, imgW, imgH);
 	},
 
-	get isEmpty() 
+	get isEmpty()
 	{
 		return (this.nodesCount <= 0);
 	},
 
-	get root() 
+	get root()
 	{
 		var idx = this.rootIndex;
 		if (idx < 0) return null;
@@ -1161,7 +1204,7 @@ MultiResTree.prototype = {
 	}
 };
 
-function _MultiResAssert(cond) 
+function _MultiResAssert(cond)
 {
 	if (cond) return;
 	alert("MultiResAssert FAILED : " + cond);
@@ -1253,8 +1296,8 @@ function MultiResRenderer(gl, cacheSizeInBytes, onLoad)
 
 	// box rendering
 	/******************************************************/
-	var bvs = sglLoadFile("spidergl/box.v.glsl");
-	var bfs = sglLoadFile("spidergl/box.f.glsl");
+	var bvs = window.rtiGlobal.box_v; // sglLoadFile("spidergl/box.v.glsl");
+	var bfs = window.rtiGlobal.box_f; //sglLoadFile("spidergl/box.f.glsl");
 	var bprg = new SglProgram(gl, [bvs], [bfs]);
 	log(bprg.log);
 
@@ -1269,7 +1312,7 @@ function MultiResRenderer(gl, cacheSizeInBytes, onLoad)
 
 	var texVsrc = "#ifdef GL_ES\n" + "precision highp float;\n" + "#endif\n" + "uniform   mat4 u_mvp;\n" + "attribute vec2 a_position;\n" + "attribute vec2 a_texcoord;\n" + "varying   vec2 v_texcoord;\n" + "void main(void){\n" +"v_texcoord  = a_texcoord;\n" + "gl_Position = u_mvp * vec4(a_position, 0.0, 1.0);\n}";
 	var texFsrc = "#ifdef GL_ES\n" + "precision highp float;\n" + "#endif\n" + "uniform sampler2D s_texture;\n" + "varying vec2     v_texcoord;\n" + "void main(void){" + "vec4 color = texture2D(s_texture, v_texcoord).xyzw;\n" + "if (color.w > 0.7)\n" + "gl_FragData[0] = vec4(color.rgb, 1.0);\n" + "else\n" +
-	"gl_FragData[0] = vec4(0.0);}";	
+	"gl_FragData[0] = vec4(0.0);}";
 	this.texProg = new SglProgram(this.gl, [texVsrc], [texFsrc]);
 	log(this.texProg.log);
 
@@ -1316,7 +1359,7 @@ MultiResRenderer.prototype = {
 		{
 			case 1:
 				var phi = Math.atan2(lpos[1], lpos[0]);
-				if (phi < 0) 
+				if (phi < 0)
 					phi = 2 * Math.PI + phi;
 				var theta = Math.min(Math.acos(lpos[2]), Math.PI / 2 - 0.15);
 
@@ -1353,22 +1396,29 @@ MultiResRenderer.prototype = {
 
 
 	loadImage: function(url)
-	{
+	{		
 		var xhttp=new XMLHttpRequest();
 		xhttp.open("GET", url + "/info.xml", false);
-		xhttp.send();
-		var doc = xhttp.responseXML;
-		this.format = "jpg";
+		
+		var self=this;
+		
+		xhttp.onreadystatechange = function() {
+			
+    		if (xhttp.readyState == XMLHttpRequest.DONE) {
+        		
+		var doc = $.parseXML(xhttp.responseText);		
+		// console.log(doc);
+		self.format = "jpg";
 		var val = parseInt(doc.getElementsByTagName("MultiRes")[0].getAttribute("format"));
 		if (!isNaN(val))
 			if (val == 1)
-				this.format = "png";
+				self.format = "png";
 		var content = doc.getElementsByTagName("Content")[0];
-		this.type = content.getAttribute("type");
-		if (!(this.type in this.enumType))
+		self.type = content.getAttribute("type");
+		if (!(self.type in self.enumType))
 			return false;
 		var tree = null;
-		switch (this.enumType[this.type])
+		switch (self.enumType[self.type])
 		{
 			case 1:
 			case 2:
@@ -1378,114 +1428,119 @@ MultiResRenderer.prototype = {
 				var bias = doc.getElementsByTagName("Bias")[0];
 				tree = doc.getElementsByTagName("Tree")[0];
 
-				this.imgWidth = parseInt(size.getAttribute("width"));
-				this.imgHeight = parseInt(size.getAttribute("height"));
-				this.ordlen = parseInt(size.getAttribute("coefficients"));
-				this.numLayers = this.ordlen;
-				if (this.enumType[this.type] == 2)
-					this.numLayers = 3;
+				self.imgWidth = parseInt(size.getAttribute("width"));
+				self.imgHeight = parseInt(size.getAttribute("height"));
+				self.ordlen = parseInt(size.getAttribute("coefficients"));
+				self.numLayers = self.ordlen;
+				if (self.enumType[self.type] == 2)
+					self.numLayers = 3;
 				tokens = scale.childNodes[0].nodeValue.split(" ");
-				if (tokens.length < this.ordlen) return;
-				this.gmax = [];
-				for (var j = 0; j < this.ordlen; j++ )
-					this.gmax[j] = parseFloat(tokens[j]);
+				if (tokens.length < self.ordlen) return;
+				self.gmax = [];
+				for (var j = 0; j < self.ordlen; j++ )
+					self.gmax[j] = parseFloat(tokens[j]);
 
 				tokens = bias.childNodes[0].nodeValue.split(" ");
-				if (tokens.length < this.ordlen) return;
-				this.gmin = [];
-				for (var j = 0; j < this.ordlen; j++ )
-					this.gmin[j] = parseFloat(tokens[j]);
+				if (tokens.length < self.ordlen) return;
+				self.gmin = [];
+				for (var j = 0; j < self.ordlen; j++ )
+					self.gmin[j] = parseFloat(tokens[j]);
 				break;
 			case 4:
 				var size = doc.getElementsByTagName("Size")[0];
 				tree = doc.getElementsByTagName("Tree")[0];
 
-				this.imgWidth = parseInt(size.getAttribute("width"));
-				this.imgHeight = parseInt(size.getAttribute("height"));
-				this.ordlen = parseInt(size.getAttribute("coefficients"));
-				this.numLayers = this.ordlen;
+				self.imgWidth = parseInt(size.getAttribute("width"));
+				self.imgHeight = parseInt(size.getAttribute("height"));
+				self.ordlen = parseInt(size.getAttribute("coefficients"));
+				self.numLayers = self.ordlen;
 				break;
 			default:
-				return;		
+				return;
 		}
 
 
-		if (this._tree)
-			this._tree.destroy(this._destroyData);
+		if (self._tree)
+			self._tree.destroy(self._destroyData);
 
-		this._tree.load(tree.textContent, this.imgWidth, this.imgHeight);
+		self._tree.load(tree.textContent, self.imgWidth, self.imgHeight);
 
-		this._url  = url;
-		this._timestamp = 0;
-		this._frustum = new SglFrustum();
-		this._maxError = 1.0;
-		this._cache = [ ];
-		this._toRequest = [ ];
-		this._toRenderFullRes = [ ];
-		this._toRenderHalfRes = [ ];
-		this._readyItems = [ ];
+		self._url  = url;
+		self._timestamp = 0;
+		self._frustum = new SglFrustum();
+		self._maxError = 1.0;
+		self._cache = [ ];
+		self._toRequest = [ ];
+		self._toRenderFullRes = [ ];
+		self._toRenderHalfRes = [ ];
+		self._readyItems = [ ];
 
-		this.renderData  = true;
-		this.renderBoxes = false;
+		self.renderData  = true;
+		self.renderBoxes = false;
 
 		//var lpos = [0.241844, 0.241844, 0.939692]
 		//lpos = sglNormalizedV3(lpos);
 		//this.lightPos = lpos.slice(0, 3);
-		this.lightPos    = [ 0.0, 0.0, 1.0 ];
-		this.lweights 	 = [];
-		this.lweights 	 = this.computeLightingFunction(this.lightPos);
-		if (this._program != null)
-			this._program.destroy();
-		switch (this.enumType[this.type])
+		self.lightPos    = [ 0.0, 0.0, 1.0 ];
+		self.lweights 	 = [];
+		self.lweights 	 = self.computeLightingFunction(self.lightPos);
+		if (self._program != null)
+			self._program.destroy();
+		switch (self.enumType[self.type])
 		{
 			case 1:
-				var vs = sglLoadFile("spidergl/multi.v.glsl");
+				var vs = window.rtiGlobal.multi_v; // sglLoadFile("spidergl/multi.v.glsl");
 				var fs = sglLoadFile("spidergl/hsh.f.glsl");
-				var prg = new SglProgram(this.gl, [vs], [fs]);
+				var prg = new SglProgram(self.gl, [vs], [fs]);
 				log(prg.log);
-				this._program  = prg;
+				self._program  = prg;
 				break;
 			case 2:
-				var vs = sglLoadFile("spidergl/multi.v.glsl");
-				var fs = sglLoadFile("spidergl/lrgbptm.f.glsl");
-				var prg = new SglProgram(this.gl, [vs], [fs]);
+				var vs = window.rtiGlobal.multi_v; //sglLoadFile("spidergl/multi.v.glsl");
+				var fs = window.rtiGlobal.lrgbptm_f; //sglLoadFile("spidergl/lrgbptm.f.glsl");
+				var prg = new SglProgram(self.gl, [vs], [fs]);
 				log(prg.log);
-				this._program  = prg;
+				self._program  = prg;
 				break;
 			case 3:
-				var vs = sglLoadFile("spidergl/multi.v.glsl");
-				var fs = sglLoadFile("spidergl/rgbptm.f.glsl");
-				var prg = new SglProgram(this.gl, [vs], [fs]);
+				var vs = window.rtiGlobal.multi_v; //sglLoadFile("spidergl/multi.v.glsl");
+				var fs = window.rtiGlobal.lrgbptm_f; //sglLoadFile("spidergl/lrgbptm.f.glsl");
+				var prg = new SglProgram(self.gl, [vs], [fs]);
 				log(prg.log);
-				this._program  = prg;
+				self._program  = prg;
 				break;
 			case 4:
-				var vs = sglLoadFile("spidergl/multi.v.glsl");
+				var vs = window.rtiGlobal.multi_v; //sglLoadFile("spidergl/multi.v.glsl");
 				var fs = sglLoadFile("spidergl/image.f.glsl");
-				var prg = new SglProgram(this.gl, [vs], [fs]);
+				var prg = new SglProgram(self.gl, [vs], [fs]);
 				log(prg.log);
-				this._program  = prg;
+				self._program  = prg;
 				break;
 			default:
-				this._program = new SglProgram();
+				self._program = new SglProgram();
 		}
-		this._renderer = new SglMeshGLRenderer(this._program);
-		this._treeTransform = sglIdentityM4();
-		this._normalizedTreeTransform = sglIdentityM4();
+		self._renderer = new SglMeshGLRenderer(self._program);
+		self._treeTransform = sglIdentityM4();
+		self._normalizedTreeTransform = sglIdentityM4();
 
-		this.leftTex = (this._tree.scale[0] - this.imgWidth) / 2.0; 
-		this.rightTex = this.leftTex + this.imgWidth; 
+		self.leftTex = (self._tree.scale[0] - self.imgWidth) / 2.0;
+		self.rightTex = self.leftTex + self.imgWidth;
 
-		this.bottomTex = (this._tree.scale[1] - this.imgHeight) / 2.0; 
-		this.topTex = this.bottomTex + this.imgHeight;
-		this.leftTex /= this._tree.scale[0];
-		this.rightTex /= this._tree.scale[0];
+		self.bottomTex = (self._tree.scale[1] - self.imgHeight) / 2.0;
+		self.topTex = self.bottomTex + self.imgHeight;
+		self.leftTex /= self._tree.scale[0];
+		self.rightTex /= self._tree.scale[0];
 
-		this.bottomTex /= this._tree.scale[1];
-		this.topTex /= this._tree.scale[1];
+		self.bottomTex /= self._tree.scale[1];
+		self.topTex /= self._tree.scale[1];
 
-		if (this._tree.ready) 
-			this._setupTree();
+		if (self._tree.ready)
+			self._setupTree();
+				
+    		}
+		}
+		xhttp.send();
+		
 	},
 
 
@@ -1633,8 +1688,8 @@ MultiResRenderer.prototype = {
 		image.src = dataURL;
 
 		var that = this;
-		image.onload = function() 
-						{ 
+		image.onload = function()
+						{
 							var texOpt =
 							{
 								generateMipmap  : false,
@@ -1659,7 +1714,7 @@ MultiResRenderer.prototype = {
 		};
 
 		var dataTextures = new Array(colorImgs.length);
-		for (var i=0; i < colorImgs.length; ++i) 
+		for (var i=0; i < colorImgs.length; ++i)
 			dataTextures[i] = new SglTexture2D(this.gl, colorImgs[i], colorTexOpts);
 
 		var data = {
@@ -1670,10 +1725,10 @@ MultiResRenderer.prototype = {
 	},
 
 
-	_destroyData : function(data) 
+	_destroyData : function(data)
 	{
 		if (!data) return;
-		for (var i = 0; i < data.textures.length; ++i) 
+		for (var i = 0; i < data.textures.length; ++i)
 			data.textures[i].destroy();
 
 		data.textures = null;
@@ -1712,7 +1767,7 @@ MultiResRenderer.prototype = {
 			return result;
 
 		// test visibility only if parent is not completely inside frustum
-		if (!parentFullyVisible) 
+		if (!parentFullyVisible)
 		{
 			var visStatus = this._frustum.boxVisibility(n.box.min, n.box.max);
 			if (visStatus == SGL_OUTSIDE_FRUSTUM) return result;
@@ -1730,7 +1785,7 @@ MultiResRenderer.prototype = {
 		n.priority.error     = error;
 
 		// if node data is not available, request node and return
-		if (!result.usable) 
+		if (!result.usable)
 		{
 			if (!n.req)
 			{
@@ -1773,7 +1828,7 @@ MultiResRenderer.prototype = {
 
 		//_MultiResAssert(neededCount > 0);
 
-		if (neededCount > 0) 
+		if (neededCount > 0)
 		{
 			if (usableCount <= 0)
 			{
@@ -1795,7 +1850,7 @@ MultiResRenderer.prototype = {
 	},
 
 
-	_collectNodes : function() 
+	_collectNodes : function()
 	{
 		this._toRequest = [ ];
 		this._toRenderFullRes = [ ];
@@ -1950,7 +2005,7 @@ MultiResRenderer.prototype = {
 		this._renderNodesHalfRes(mvp);
 	},
 
-	_renderNodeFullResBox : function(n) 
+	_renderNodeFullResBox : function(n)
 	{
 		var sz = n.box.size;
 
@@ -1964,7 +2019,7 @@ MultiResRenderer.prototype = {
 		this._boxRenderer.render();
 	},
 
-	_renderNodesFullResBoxes : function(mvp) 
+	_renderNodesFullResBoxes : function(mvp)
 	{
 		var uniforms = {
 			u_model_view_projection_matrix : mvp
@@ -1985,7 +2040,7 @@ MultiResRenderer.prototype = {
 		this._boxRenderer.end();
 	},
 
-	_renderNodeHalfResBox : function(n, children) 
+	_renderNodeHalfResBox : function(n, children)
 	{
 		var uniforms = {
 			u_world_box_min : null,
@@ -2052,7 +2107,7 @@ MultiResRenderer.prototype = {
 		if (this.renderData)
 			this._renderNodes(mvp);
 
-		if (this.renderBoxes) 
+		if (this.renderBoxes)
 			this._renderNodesBoxes(mvp);
 
 		if (this.lg && this.lgtex != null)
@@ -2087,7 +2142,7 @@ MultiResRenderer.prototype = {
 		var r = null;
 		var failed = [ ];
 
-		for (var i=0; i<k; ++i) 
+		for (var i=0; i<k; ++i)
 		{
 			n = this._cache[i];
 			r = n.req;
@@ -2122,7 +2177,7 @@ MultiResRenderer.prototype = {
 
 			if (r) continue;
 
-			if (reinsertedCount < fc) 
+			if (reinsertedCount < fc)
 			{
 				this._cache[failed[reinsertedCount]] = n;
 				reinsertedCount++;
@@ -2134,12 +2189,12 @@ MultiResRenderer.prototype = {
 			}
 		}
 
-		if (reinsertedCount > 0) 
+		if (reinsertedCount > 0)
 			this._cache.sort(_MultiResCompareNodes);
 	},
 
 
-	_requestNodes : function() 
+	_requestNodes : function()
 	{
 		var cs = this._cache.length;
 		var lastItem = (cs > 0) ? (this._cache[cs-1]) : (null);
@@ -2152,13 +2207,13 @@ MultiResRenderer.prototype = {
 		var n = null;
 		var canRequest = false;
 
-		for (var i=0; ((i<k) && (requested<requestableCount)); ++i) 
+		for (var i=0; ((i<k) && (requested<requestableCount)); ++i)
 		{
 			n = this._toRequest[i];
 			if (n.req) continue; // ongoing;
 
 			canRequest = true;
-			if ((lastItem != null) && (cs >= this._maxCacheSize)) 
+			if ((lastItem != null) && (cs >= this._maxCacheSize))
 				canRequest = (_MultiResCompareNodes(n, lastItem) < 0);
 
 			if (canRequest)
@@ -2170,7 +2225,7 @@ MultiResRenderer.prototype = {
 	},
 
 
-	_calculateNormalizedTreeTransform : function() 
+	_calculateNormalizedTreeTransform : function()
 	{
 		var root = this._tree.root;
 		if (!root) return sglIdentityM4();
@@ -2207,7 +2262,7 @@ MultiResRenderer.prototype = {
 		*/
 	},
 
-	_setupTree : function() 
+	_setupTree : function()
 	{
 		var root = this._tree.root;
 		if (!root) return;
@@ -2250,7 +2305,7 @@ MultiResRenderer.prototype = {
 	},
 
 
-	get normalizedTreeTransform() 
+	get normalizedTreeTransform()
 	{
 		return this._normalizedTreeTransform;
 	}
