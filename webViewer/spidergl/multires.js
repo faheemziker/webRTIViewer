@@ -296,6 +296,7 @@ function createRtiViewer(idDiv, imageUrl, width, height)
 	{
 		divError.innerHTML = '';
 		var multiResRTI = new MultiRes(canvasName);
+
 		multiResRTI.setImageUrl(imageUrl);
 		function isRelitable(type){
 			if (type ==  "IMAGE")
@@ -305,7 +306,14 @@ function createRtiViewer(idDiv, imageUrl, width, height)
 			$( ".toolbar").css("visibility", "visible");
 		};
 		multiResRTI.setOnLoadImageCallback(isRelitable);
+		console.log(canvasName);
+
 		sglRegisterCanvas(canvasName, multiResRTI, 10.0);
+
+		var event = new CustomEvent("load");
+		window.dispatchEvent(event);
+
+
 	}
 }
 
@@ -1686,6 +1694,7 @@ MultiResRenderer.prototype = {
 		var image = new Image();
 		var dataURL = canvas.toDataURL("image/png");
 		image.src = dataURL;
+		image.crossOrigin = "";
 
 		var that = this;
 		image.onload = function()
