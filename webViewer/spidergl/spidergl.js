@@ -391,8 +391,10 @@ SglImageRequest.prototype._send = function() {
 
 	var img = new Image();
 	this._img = img;
-
+	
 	var cb = this._createOnReadyCallback();
+
+	img.crossOrigin="";
 	img.onload = function() {
 		cb(img.complete);
 	};
@@ -4308,6 +4310,7 @@ function sglTexture2DFromUrl(gl, url, options) {
 	var obj = new SglTextureInfo();
 
 	var img = new Image();
+	img.crossOrigin = "";
 	img.onload = function() {
 		var texInfo = sglTexture2DFromImage(gl, img, opt);
 		for (var a in texInfo) {
@@ -4317,7 +4320,9 @@ function sglTexture2DFromUrl(gl, url, options) {
 			opt.onload(gl, obj, url);
 		}
 	};
+	img.crossOrigin = "";
 	img.src = url;
+	
 
 	return obj;
 }
